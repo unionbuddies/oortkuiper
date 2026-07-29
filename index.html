@@ -241,6 +241,16 @@ const REGIONS = {
   },
 };
 
+// One tint per region so the four dust structures are tellable apart at a
+// glance. The sidebar dots reuse these exact values, so the list doubles as
+// the colour key.
+const REGION_TINT={
+  kuiper:     0xdceeff, // bright blue-white — the crisp, dense belt
+  scattered:  0x74d9bc, // mint — sparse, flared, clearly not the belt
+  inner_oort: 0xffc16e, // warm amber — the flattened Hills Cloud
+  outer_oort: 0xbba4ff, // lavender — the diffuse outer sphere
+};
+
 // Distances are approximate for mid-2026; each probe recedes a few AU per year.
 const SPACECRAFT=[
   { name:'Voyager 1', au:168, ang:1.15, lat:.55, color:0xfff0a0,
@@ -381,7 +391,7 @@ function makeDust({count,minAu,maxAu,flatten,size,opacity,color=0xdfeaf2}){
 }
 
 function addDust(cfg,regionKey,group){
-  const pts=makeDust(cfg);
+  const pts=makeDust({...cfg,color:REGION_TINT[regionKey]});
   pts.userData={type:'region',data:REGIONS[regionKey]};
   group.add(pts);
   regionClouds.push(pts);
@@ -479,12 +489,17 @@ PLANETS.forEach(p=>{
 });
 
 // ─── Kuiper Belt & Scattered Disc dust ───────────────────────────────────────
-addDust({count:26000,minAu:30,maxAu:55,flatten:.88,size:1.15,opacity:.95},'kuiper',kuiperGroup);
-addDust({count:9000, minAu:55,maxAu:200,flatten:.72,size:1.1, opacity:.55},'scattered',kuiperGroup);
+// Thin, dense, fully opaque — reads as a hard-edged bright band
+addDust({count:26000,minAu:30,maxAu:55,flatten:.93,size:1.05,opacity:1},'kuiper',kuiperGroup);
+// Deliberately puffier and dimmer than the belt so the two never blur together
+addDust({count:15000,minAu:55,maxAu:200,flatten:.58,size:1.25,opacity:.68},'scattered',kuiperGroup);
 
 // ─── Oort Cloud shells ───────────────────────────────────────────────────────
-addDust({count:26000,minAu:2000, maxAu:20000, flatten:.45,size:1.5,opacity:.8},'inner_oort',oortGroup);
-addDust({count:52000,minAu:20000,maxAu:100000,flatten:0,  size:1.6,opacity:.62},'outer_oort',oortGroup);
+// Inner (Hills) cloud: flattened doughnut, brighter and tighter, so it stays
+// readable through the outer sphere that surrounds it.
+addDust({count:30000,minAu:2000, maxAu:20000, flatten:.62,size:1.3,opacity:.95},'inner_oort',oortGroup);
+// Outer cloud: a true sphere, larger grains, dimmer — diffuse haze
+addDust({count:55000,minAu:20000,maxAu:100000,flatten:0,  size:1.85,opacity:.5},'outer_oort',oortGroup);
 
 // ─── Orbit ellipses for the named bodies ─────────────────────────────────────
 function makeOrbit(a,e,incDeg,color,opacity){
@@ -821,12 +836,12 @@ function buildList(){
     html+=section('Our Own System',
       ['inner_oort','outer_oort'].map(k=>
         `<button class="obj-btn" data-region="${k}">`+
-        `<span class="obj-dot" style="background:#dfeaf2"></span>${REGIONS[k].name}</button>`));
+        `<span class="obj-dot" style="background:${hex(REGION_TINT[k])}"></span>${REGIONS[k].name}</button>`));
   } else {
     const regionKeys = mode==='kuiper' ? ['kuiper','scattered'] : ['inner_oort','outer_oort'];
     html+=section('Regions — click for composition', regionKeys.map(k=>
       `<button class="obj-btn" data-region="${k}">`+
-      `<span class="obj-dot" style="background:#dfeaf2"></span>${REGIONS[k].name}</button>`));
+      `<span class="obj-dot" style="background:${hex(REGION_TINT[k])}"></span>${REGIONS[k].name}</button>`));
 
     if(mode==='kuiper'){
       html+=section('Boundary',[
