@@ -392,7 +392,7 @@ function makeDust({count,minAu,maxAu,flatten,size,opacity,color=0xdfeaf2}){
 
 function addDust(cfg,regionKey,group){
   const pts=makeDust({...cfg,color:REGION_TINT[regionKey]});
-  pts.userData={type:'region',data:REGIONS[regionKey]};
+  pts.userData={type:'region',data:REGIONS[regionKey],key:regionKey,baseOpacity:cfg.opacity};
   group.add(pts);
   regionClouds.push(pts);
   return pts;
@@ -822,6 +822,30 @@ window.setMode=function(m){
   buildList();
 };
 
+// ─── Flying to a region ──────────────────────────────────────────────────────
+// A region is a shell, not a point, so "go there" means framing it: parked at
+// roughly outerRadius / tan(halfFov) so the whole structure fits the view.
+const REGION_VIEW={
+  kuiper:     {mode:'kuiper', cam:new THREE.Vector3(0, 58,118)},
+  scattered:  {mode:'kuiper', cam:new THREE.Vector3(0, 80,162)},
+  inner_oort: {mode:'oort',   cam:new THREE.Vector3(0,102,312)},
+  outer_oort: {mode:'oort',   cam:new THREE.Vector3(0,124,366)},
+};
+const HELIOPAUSE_VIEW={mode:'kuiper', cam:new THREE.Vector3(0,68,142)};
+
+// Dim the other regions briefly so the eye lands on the one just picked
+let highlightKey=null, highlightUntil=0;
+function highlight(key){ highlightKey=key; highlightUntil=performance.now()+3200; }
+
+function goToView(v,key,data){
+  if(v.mode!==mode)setMode(v.mode);   // setMode also flies; overridden just below
+  flyToVec(v.cam,new THREE.Vector3(0,0,0));
+  if(key)highlight(key);
+  openPanel({data});
+}
+window.focusRegion=key=>goToView(REGION_VIEW[key],key,REGIONS[key]);
+window.focusHeliopause=()=>goToView(HELIOPAUSE_VIEW,null,HELIOPAUSE);
+
 // ─── Sidebar list, filtered to the active mode ───────────────────────────────
 const hex=c=>'#'+c.toString(16).padStart(6,'0');
 function buildList(){
@@ -867,8 +891,8 @@ function buildList(){
 }
 document.getElementById('obj-list').addEventListener('click',e=>{
   const b=e.target.closest('.obj-btn'); if(!b)return;
-  if(b.dataset.region)openPanel({data:REGIONS[b.dataset.region]});
-  else if(b.dataset.heliopause)openPanel({data:HELIOPAUSE});
+  if(b.dataset.region)focusRegion(b.dataset.region);
+  else if(b.dataset.heliopause)focusHeliopause();
   else focusObject(b.dataset.id);
 });
 
@@ -905,6 +929,16 @@ function animate(now){
     const r=s(obj.au),inc=obj.inc*Math.PI/180*.3;
     const a=obj.phi+now*(.0002+i*.00003)*.012;
     m.position.set(r*Math.cos(a)*Math.cos(inc),r*Math.sin(inc),r*Math.sin(a)*Math.cos(inc));
+  });
+
+  // Ease each region toward its target opacity; non-selected ones sit at 25%
+  // while a highlight is active, then everything settles back.
+  const dimming=highlightKey&&now<highlightUntil;
+  regionClouds.forEach(c=>{
+    const base=c.userData.baseOpacity;
+    if(base===undefined)return;
+    const target=(dimming&&c.userData.key!==highlightKey)?base*.25:base;
+    c.material.opacity+=(target-c.material.opacity)*Math.min(1,dt*6);
   });
 
   controls.update();
