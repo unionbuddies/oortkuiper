@@ -16,15 +16,17 @@
     #loading h2{font-size:22px;font-weight:400;color:#9fc4da;letter-spacing:3px;text-transform:uppercase}
     #loading p{font-size:14px;color:#5b8ba6;margin-top:10px}
 
-    /* ── Top bar ─────────────────────────────────────────────── */
-    #topbar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:flex-start;
-      justify-content:space-between;gap:18px;padding:18px 22px;flex-wrap:wrap;pointer-events:none}
-    #title-bar h1{font-size:clamp(17px,2vw,24px);font-weight:600;color:#ffffff;letter-spacing:2px;
-      text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.5)}
-    #title-bar p{font-size:13px;color:#8fb8d0;margin-top:4px;letter-spacing:.4px}
+    /* ── Top bar: chrome lives left, all information lives right ── */
+    #topbar{position:fixed;top:0;left:0;z-index:20;display:flex;flex-direction:column;
+      align-items:flex-start;gap:15px;padding:18px 22px;pointer-events:none;
+      max-width:calc(100vw - 420px)}
+    #title-bar h1{font-size:clamp(19px,2.4vw,29px);font-weight:700;color:#ffffff;letter-spacing:2.5px;
+      text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.55);line-height:1.1}
+    #title-bar .view-name{font-size:15px;color:#9fd0e8;margin-top:7px;font-weight:600;letter-spacing:.6px}
+    #title-bar .view-sub{font-size:13px;color:#7ea8c2;margin-top:2px;letter-spacing:.3px}
 
-    /* ── Big mode switch: the two structures, kept separate ──── */
-    #modes{display:flex;gap:10px;pointer-events:auto}
+    /* ── Big mode switch ──────────────────────────────────────── */
+    #modes{display:flex;gap:10px;flex-wrap:wrap;pointer-events:auto}
     .mode-btn{background:rgba(10,50,72,.85);border:2px solid rgba(150,195,220,.35);
       color:#bcd9e9;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;
       letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;font-family:inherit;
@@ -42,10 +44,15 @@
       pointer-events:none;display:none;z-index:300;backdrop-filter:blur(4px);
       box-shadow:0 4px 16px rgba(0,0,0,.4)}
 
-    /* ── Info panel ──────────────────────────────────────────── */
-    #info-panel{position:fixed;right:22px;top:50%;transform:translateY(-50%);
-      width:370px;max-height:82vh;overflow-y:auto;background:rgba(9,42,61,.96);
-      border:1px solid rgba(150,195,220,.3);border-radius:16px;padding:26px;display:none;z-index:100;
+    /* ── Right rail: overview / details on top, jump list below ── */
+    #right-rail{position:fixed;right:18px;top:18px;bottom:18px;width:382px;
+      max-width:calc(100vw - 36px);z-index:100;display:flex;flex-direction:column;
+      gap:12px;pointer-events:none}
+    #right-rail>*{pointer-events:auto}
+
+    #info-panel{flex:1 1 auto;min-height:0;overflow-y:auto;position:relative;
+      background:rgba(9,42,61,.96);
+      border:1px solid rgba(150,195,220,.3);border-radius:16px;padding:26px;
       backdrop-filter:blur(12px);box-shadow:0 10px 50px rgba(0,0,0,.5)}
     #info-panel::-webkit-scrollbar{width:7px}
     #info-panel::-webkit-scrollbar-thumb{background:rgba(160,205,230,.35);border-radius:4px}
@@ -69,10 +76,10 @@
     .comp-fill{height:100%;border-radius:4px}
     .comp-pct{font-size:13px;color:#ffffff;width:36px;text-align:right;font-weight:600}
 
-    /* ── Sidebar ─────────────────────────────────────────────── */
-    #sidebar{position:fixed;left:22px;bottom:22px;width:224px;z-index:15;
-      display:flex;flex-direction:column;gap:12px;max-height:64vh;
-      background:rgba(9,42,61,.92);border:1px solid rgba(150,195,220,.28);
+    /* ── Jump-to list, in the same right rail ────────────────── */
+    #sidebar{flex:0 0 auto;max-height:42%;
+      display:flex;flex-direction:column;gap:10px;
+      background:rgba(9,42,61,.94);border:1px solid rgba(150,195,220,.28);
       border-radius:14px;padding:16px;backdrop-filter:blur(8px);
       box-shadow:0 6px 30px rgba(0,0,0,.4)}
     #sidebar h3{font-size:11px;color:#89b3ca;text-transform:uppercase;letter-spacing:1.3px;
@@ -89,31 +96,37 @@
     .obj-btn:hover{background:rgba(255,255,255,.14);color:#fff}
     .obj-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor}
 
-    #comet-bar{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:18;
-      display:flex;align-items:center;gap:12px;background:rgba(9,42,61,.9);
-      border:1px solid rgba(150,195,220,.3);border-radius:24px;padding:7px 16px 7px 8px;
-      backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,.35)}
-    #comet-btn{background:rgba(120,200,235,.18);border:1px solid rgba(160,215,240,.45);
-      color:#e8f6ff;border-radius:18px;padding:7px 15px;font-size:13px;font-weight:600;
+    /* Comet playback lives inside its own info panel */
+    .panel-action{display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+      margin:0 0 18px;padding:12px;border-radius:10px;
+      background:rgba(120,200,235,.12);border:1px solid rgba(160,215,240,.3)}
+    #comet-btn{background:rgba(120,200,235,.22);border:1px solid rgba(160,215,240,.5);
+      color:#e8f6ff;border-radius:18px;padding:8px 16px;font-size:13px;font-weight:600;
       cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s}
-    #comet-btn:hover{background:rgba(120,200,235,.34)}
-    .cb-lbl{font-size:13px;color:#a8cde2;white-space:nowrap}
+    #comet-btn:hover{background:rgba(120,200,235,.38)}
+    .cb-lbl{font-size:13px;color:#a8cde2}
     .cb-lbl b{color:#ffffff;font-weight:700}
-    @media (max-width:1150px){#comet-bar .cb-lbl{display:none}}
-    @media (max-width:760px){#comet-bar{top:auto;bottom:16px}}
 
-    #hint{position:fixed;bottom:22px;right:22px;background:rgba(9,42,61,.9);
+    .ov-list{list-style:none;margin:0 0 20px;padding:0}
+    .ov-list li{font-size:14px;color:#d3e6f0;line-height:1.55;padding:7px 0 7px 20px;
+      position:relative;border-top:1px solid rgba(150,195,220,.13)}
+    .ov-list li:first-child{border-top:none}
+    .ov-list li::before{content:'›';position:absolute;left:4px;top:7px;color:#7fbcd8;font-weight:700}
+
+    #hint{position:fixed;bottom:22px;left:22px;background:rgba(9,42,61,.9);
       border:1px solid rgba(150,195,220,.25);border-radius:10px;padding:11px 16px;font-size:13px;
       color:#8fb8d0;z-index:15;backdrop-filter:blur(6px)}
     #hint b{color:#ffffff;font-weight:600}
 
-    @media (max-width:900px){
-      #info-panel{left:0;right:0;bottom:0;top:auto;transform:none;width:auto;
-        max-height:56vh;border-radius:16px 16px 0 0}
-      #sidebar{width:180px;max-height:48vh}
+    @media (max-width:980px){
+      #topbar{max-width:100vw}
+      #right-rail{left:0;right:0;top:auto;bottom:0;width:auto;height:62vh;
+        flex-direction:column-reverse;gap:0}
+      #info-panel{border-radius:0;border-left:none;border-right:none}
+      #sidebar{border-radius:14px 14px 0 0;max-height:38%}
       #hint{display:none}
     }
-    @media (max-height:560px){#sidebar{display:none}}
+    @media (max-height:520px){#sidebar{display:none}}
   </style>
 </head>
 <body>
@@ -123,8 +136,9 @@
 
 <div id="topbar">
   <div id="title-bar">
-    <h1 id="view-title">Kuiper Belt</h1>
-    <p id="view-sub">The icy disk beyond Neptune · 30–55 AU</p>
+    <h1>Outer Solar System</h1>
+    <div class="view-name" id="view-title">Kuiper Belt</div>
+    <div class="view-sub" id="view-sub">The icy disk beyond Neptune · 30–55 AU</div>
   </div>
   <div id="modes">
     <button class="mode-btn active" id="btn-kuiper" onclick="setMode('kuiper')">Kuiper Belt</button>
@@ -133,25 +147,24 @@
   </div>
 </div>
 
-<div id="comet-bar">
-  <button id="comet-btn" onclick="toggleComet()">❚❚ Pause comet</button>
-  <span class="cb-lbl">Comet is <b id="comet-dist">—</b> from the Sun</span>
-</div>
-
 <div id="tooltip"></div>
 
-<div id="info-panel">
-  <button class="close" onclick="closePanel()">✕</button>
-  <h2 id="p-title"></h2>
-  <div class="sub" id="p-sub"></div>
-  <div class="stat-grid" id="p-stats"></div>
-  <div id="panel-desc"></div>
-  <div id="p-comp"></div>
-</div>
+<div id="right-rail">
+  <div id="info-panel">
+    <button class="close" id="p-close" onclick="closePanel()">✕</button>
+    <h2 id="p-title"></h2>
+    <div class="sub" id="p-sub"></div>
+    <div id="p-action"></div>
+    <div class="stat-grid" id="p-stats"></div>
+    <div id="panel-desc"></div>
+    <div id="p-bullets"></div>
+    <div id="p-comp"></div>
+  </div>
 
-<div id="sidebar">
-  <div><h3 id="list-title">Jump to Object</h3></div>
-  <div id="obj-list"></div>
+  <div id="sidebar">
+    <div><h3>Jump to Object</h3></div>
+    <div id="obj-list"></div>
+  </div>
 </div>
 
 <div id="hint"><b>Scroll</b> zoom · <b>Drag</b> rotate · <b>Click</b> objects &amp; dust</div>
@@ -241,6 +254,40 @@ const REGIONS = {
   },
 };
 
+// Shown in the right rail whenever nothing specific is selected, so every view
+// opens by explaining itself.
+const OVERVIEW={
+  kuiper:{ name:'The Kuiper Belt', sub:'Overview · 30–55 AU from the Sun',
+    stats:{'Distance':'30–55 AU','Objects >100 km':'100,000+','Total mass':'~0.04 Earth masses','First found':'1992'},
+    desc:'Beyond Neptune the planets stop and a broad, flat ring of ice and rock begins. The Kuiper Belt is the leftover rubble of planet formation — material that never merged into a planet because Neptune\'s gravity kept stirring it up. Pluto lives here, and so do the short-period comets that visit the inner solar system every few decades.',
+    bullets:[
+      'It is roughly 20 times wider and far more massive than the asteroid belt.',
+      'Neptune sets the inner edge at 30 AU and locks many objects into resonant orbits.',
+      'Beyond it, the mint-coloured Scattered Disc holds bodies flung onto steep, stretched orbits.',
+      'New Horizons is the only spacecraft ever to fly through it, passing Pluto in 2015.'],
+    comp:[{l:'Water ice',p:45,c:'#cfe8ff'},{l:'Rock / silicates',p:25,c:'#c69a66'},{l:'Methane ice',p:15,c:'#5cb8ff'},{l:'Carbon monoxide',p:10,c:'#7ad4b4'},{l:'Organic tholins',p:5,c:'#a2542f'}]},
+
+  oort:{ name:'The Oort Cloud', sub:'Overview · 2,000–100,000 AU from the Sun',
+    stats:{'Distance':'2,000–100,000 AU','Est. objects':'2 trillion+','Shape':'Hollow sphere','Outer edge':'Nearly 2 light-years'},
+    desc:'Far past the Kuiper Belt lies a shell of icy bodies wrapped around the solar system in every direction at once. Nobody has ever seen it directly — its existence is inferred from where long-period comets come from, arriving from every angle rather than along the plane of the planets. The bright ring at the centre of this view is the entire Kuiper Belt, which gives a sense of the scale involved.',
+    bullets:[
+      'The amber inner cloud (the Hills Cloud) is a flattened doughnut holding most of the objects.',
+      'The lavender outer cloud is a true sphere — comets can fall in from any direction.',
+      'Passing stars and the Milky Way\'s tide nudge objects loose over millions of years.',
+      'Voyager 1, after nearly fifty years of flight, has covered under a tenth of the way to the inner edge.'],
+    comp:[{l:'Water ice',p:75,c:'#cfe8ff'},{l:'Carbon monoxide',p:10,c:'#7ad4b4'},{l:'Carbon dioxide',p:8,c:'#96d296'},{l:'Rock / dust',p:5,c:'#c69a66'},{l:'Other volatiles',p:2,c:'#8ec48e'}]},
+
+  exo:{ name:'Belts Around Other Stars', sub:'Overview · Debris disks, 4–133 light-years',
+    stats:{'Nearest system':'Proxima Centauri, 4.2 ly','Best analog':'Epsilon Eridani, 10.5 ly','First found':'Vega, 1983','Known disks':'Hundreds'},
+    desc:'Our Kuiper Belt is not unique. Many other stars are ringed by debris disks — belts of ice and rock left over from their own planet formation. Studying them is the closest thing we have to seeing our outer solar system from the outside, and to watching what it looked like when it was young.',
+    bullets:[
+      'Epsilon Eridani has a cold belt near 70 AU, strikingly close to where ours sits.',
+      'Sharp-edged rings like Fomalhaut\'s hint at unseen planets shepherding the dust.',
+      'Vega\'s 1983 infrared glow was the discovery that started the whole field.',
+      'Positions here are illustrative — real distances are light-years, far off this scale.'],
+    comp:[{l:'Cold outer belts',p:50,c:'#cfe8ff'},{l:'Warm inner belts',p:22,c:'#ffab5c'},{l:'Giant planets',p:18,c:'#c69a66'},{l:'Fine dust',p:10,c:'#a8b8d8'}]},
+};
+
 // One tint per region so the four dust structures are tellable apart at a
 // glance. The sidebar dots reuse these exact values, so the list doubles as
 // the colour key.
@@ -251,28 +298,36 @@ const REGION_TINT={
   outer_oort: 0xbba4ff, // lavender — the diffuse outer sphere
 };
 
-// Distances are approximate for mid-2026; each probe recedes a few AU per year.
+// All five probes are outbound and never return, so their current distance IS
+// the farthest they have ever been. Figures are for mid-2026, projected from
+// each craft's cruise speed; the two Pioneers are dead-reckoned estimates since
+// contact was lost, so nobody knows their exact position.
 const SPACECRAFT=[
-  { name:'Voyager 1', au:168, ang:1.15, lat:.55, color:0xfff0a0,
+  { name:'Voyager 1', au:171, ang:1.15, lat:.55, color:0xfff0a0,
     type:'Farthest Human-Made Object',
-    stats:{'Distance':'~168 AU','Launched':'5 Sept 1977','Speed':'3.6 AU per year','Status':'Still transmitting'},
-    desc:'Voyager 1 has been flying for nearly fifty years and is the most distant object humanity has ever built. It crossed the heliopause into interstellar space in 2012. Even so it will need roughly 300 more years just to reach the inner edge of the Oort Cloud, and about 30,000 years to pass through it.',
-    comp:[{l:'Journey completed to inner Oort',p:8,c:'#7ad4b4'},{l:'Still to travel',p:92,c:'#3c5f78'}]},
-  { name:'Voyager 2', au:141, ang:3.9, lat:-.62, color:0xffe9a0,
+    stats:{'Distance now':'~171 AU','Launched':'5 Sept 1977','Speed':'3.6 AU per year','Status':'Still transmitting'},
+    desc:'Voyager 1 has been flying for nearly fifty years and is the most distant object humanity has ever built — every day it sets a new record. It crossed the heliopause into interstellar space in 2012. Even so, it needs roughly 300 more years just to reach the inner edge of the Oort Cloud, and about 30,000 years to pass all the way through it.',
+    comp:[{l:'Distance covered to inner Oort',p:9,c:'#7ad4b4'},{l:'Still to travel',p:91,c:'#3c5f78'}]},
+  { name:'Voyager 2', au:144, ang:3.9, lat:-.62, color:0xffe9a0,
     type:'Only Probe to Visit All Four Giants',
-    stats:{'Distance':'~141 AU','Launched':'20 Aug 1977','Speed':'3.2 AU per year','Status':'Still transmitting'},
-    desc:'The only spacecraft to have flown past Jupiter, Saturn, Uranus and Neptune. Its 1989 Neptune encounter remains our only close look at an ice giant. It crossed into interstellar space in 2018, on a very different heading from Voyager 1.',
-    comp:[{l:'Journey completed to inner Oort',p:7,c:'#7ad4b4'},{l:'Still to travel',p:93,c:'#3c5f78'}]},
-  { name:'Pioneer 10', au:146, ang:5.3, lat:.12, color:0xd8c8b0,
+    stats:{'Distance now':'~144 AU','Launched':'20 Aug 1977','Speed':'3.2 AU per year','Status':'Still transmitting'},
+    desc:'The only spacecraft to have flown past Jupiter, Saturn, Uranus and Neptune. Its 1989 Neptune encounter remains our only close look at an ice giant. It crossed into interstellar space in 2018, heading in a very different direction from Voyager 1 — which is why the two sit on opposite sides of this view.',
+    comp:[{l:'Distance covered to inner Oort',p:7,c:'#7ad4b4'},{l:'Still to travel',p:93,c:'#3c5f78'}]},
+  { name:'Pioneer 10', au:140, ang:5.3, lat:.12, color:0xd8c8b0,
     type:'First Probe Through the Asteroid Belt',
-    stats:{'Distance':'~146 AU','Launched':'2 Mar 1972','Last contact':'23 Jan 2003','Status':'Silent'},
-    desc:'The first spacecraft to cross the asteroid belt and fly past Jupiter. Contact was lost in 2003 as its power supply faded, but it continues to coast outward carrying a plaque depicting humanity and our location — a message in a bottle.',
-    comp:[{l:'Journey completed to inner Oort',p:7,c:'#7ad4b4'},{l:'Still to travel',p:93,c:'#3c5f78'}]},
+    stats:{'Distance now':'~140 AU (estimated)','Launched':'2 Mar 1972','Last contact':'23 Jan 2003','Status':'Silent'},
+    desc:'The first spacecraft to cross the asteroid belt and fly past Jupiter. Contact was lost in 2003 when its power supply faded at about 80 AU, so this position is calculated from its known speed rather than measured. It coasts outward carrying a plaque showing humanity and our location — a message in a bottle.',
+    comp:[{l:'Distance covered to inner Oort',p:7,c:'#7ad4b4'},{l:'Still to travel',p:93,c:'#3c5f78'}]},
+  { name:'Pioneer 11', au:118, ang:2.35, lat:-.3, color:0xcfc0a8,
+    type:'First Probe to Saturn',
+    stats:{'Distance now':'~118 AU (estimated)','Launched':'6 Apr 1973','Last contact':'Nov 1995','Status':'Silent'},
+    desc:'Pioneer 11 used Jupiter\'s gravity to swing across the solar system and became the first spacecraft to reach Saturn, in 1979. Contact ended in 1995 at around 44 AU. Like its twin it carries an identical plaque, and drifts on toward the constellation Aquila.',
+    comp:[{l:'Distance covered to inner Oort',p:6,c:'#7ad4b4'},{l:'Still to travel',p:94,c:'#3c5f78'}]},
   { name:'New Horizons', au:65, ang:0.35, lat:-.15, color:0x9fe0ff,
     type:'The Kuiper Belt Explorer',
-    stats:{'Distance':'~65 AU','Launched':'19 Jan 2006','Speed':'~3 AU per year','Status':'Active in the belt'},
-    desc:'The only spacecraft ever to visit the Kuiper Belt up close. It flew past Pluto in July 2015, revealing nitrogen ice plains and methane mountains, then continued on to Arrokoth in 2019 — the most distant object ever explored. It is still inside the belt today.',
-    comp:[{l:'Journey completed to inner Oort',p:3,c:'#7ad4b4'},{l:'Still to travel',p:97,c:'#3c5f78'}]},
+    stats:{'Distance now':'~65 AU','Launched':'19 Jan 2006','Speed':'~2.9 AU per year','Status':'Active in the belt'},
+    desc:'The only spacecraft ever to visit the Kuiper Belt up close. It flew past Pluto in July 2015, revealing nitrogen ice plains and methane mountains, then continued to Arrokoth in 2019 — the most distant object ever explored. Unlike the others it is still inside the belt, and still working.',
+    comp:[{l:'Distance covered to inner Oort',p:3,c:'#7ad4b4'},{l:'Still to travel',p:97,c:'#3c5f78'}]},
 ];
 
 const HELIOPAUSE={ name:'The Heliopause', sub:'Edge of the Sun\'s Influence · ~120 AU',
@@ -628,7 +683,7 @@ EXOSYSTEMS.forEach(sys=>{
 
 // ─── A comet falling in from the Oort Cloud ──────────────────────────────────
 const COMET={a:186,e:.995,inc:76*Math.PI/180};   // perihelion 0.9 AU, aphelion 371 AU
-const COMET_INFO={ name:'Long-Period Comet', type:'Inbound from the Oort Cloud',
+const COMET_INFO={ name:'Long-Period Comet', type:'Inbound from the Oort Cloud', isComet:true,
   stats:{'Orbit':'0.9 – 371 AU','Eccentricity':'0.995','Period':'~2,500 years','Nucleus':'A few km of ice and dust'},
   desc:'Most of its life this comet drifts slowly near aphelion in the cold outer dark. A gravitational nudge — from a passing star or the Milky Way\'s tide — drops it inward. Only in the final stretch does sunlight turn its ice directly to gas, releasing dust and building the tail. The tail always points away from the Sun, pushed by solar wind and radiation, so on the way out the comet follows its own tail.',
   comp:[{l:'Water ice',p:75,c:'#cfe8ff'},{l:'Dust and rock',p:12,c:'#c69a66'},{l:'Carbon monoxide',p:8,c:'#7ad4b4'},{l:'CO₂, methane, ammonia',p:5,c:'#96d296'}]};
@@ -671,7 +726,8 @@ const cometTail=(()=>{
   return p;
 })();
 
-let cometE=Math.PI, cometPlaying=true;   // start out near aphelion
+// Parked near aphelion and still until the user selects the comet
+let cometE=2.55, cometPlaying=false;
 const X_AXIS=new THREE.Vector3(1,0,0);
 function updateComet(dt){
   // Real Kepler motion would park it at aphelion for ~99% of the period, so the
@@ -697,9 +753,13 @@ function updateComet(dt){
   if(el)el.textContent=rAu<10?rAu.toFixed(1)+' AU':Math.round(rAu)+' AU';
 }
 
+function syncCometBtn(){
+  const b=document.getElementById('comet-btn');
+  if(b)b.textContent=cometPlaying?'❚❚ Pause journey':'▶ Play the journey';
+}
 window.toggleComet=function(){
   cometPlaying=!cometPlaying;
-  document.getElementById('comet-btn').textContent=cometPlaying?'❚❚ Pause comet':'▶ Play comet';
+  syncCometBtn();
 };
 
 // ─── Raycasting ──────────────────────────────────────────────────────────────
@@ -760,15 +820,31 @@ function openPanel(ud){
     Object.entries(d.stats||{}).map(([k,v])=>
       `<div class="stat"><div class="stat-lbl">${k}</div><div class="stat-val">${v}</div></div>`).join('');
   document.getElementById('panel-desc').textContent=d.desc||'';
+  document.getElementById('p-bullets').innerHTML=(d.bullets&&d.bullets.length)
+    ? '<ul class="ov-list">'+d.bullets.map(b=>`<li>${b}</li>`).join('')+'</ul>' : '';
   document.getElementById('p-comp').innerHTML=(d.comp&&d.comp.length)
     ? '<div class="comp-title">What it is made of</div>'+d.comp.map(c=>
         `<div class="comp-row"><div class="comp-lbl">${c.l}</div>`+
         `<div class="comp-bg"><div class="comp-fill" style="width:${c.p}%;background:${c.c}"></div></div>`+
         `<div class="comp-pct">${c.p}%</div></div>`).join('')
     : '';
-  document.getElementById('info-panel').style.display='block';
+
+  // Only the comet gets a playback control, and selecting it starts the journey
+  const act=document.getElementById('p-action');
+  if(d.isComet){
+    act.innerHTML='<div class="panel-action">'+
+      '<button id="comet-btn" onclick="toggleComet()"></button>'+
+      '<span class="cb-lbl">Now <b id="comet-dist">—</b> from the Sun</span></div>';
+    cometPlaying=true;
+    syncCometBtn();
+  } else { act.innerHTML=''; cometPlaying=false; } // motion only while selected
+
+  // The overview is the resting state, so it needs no dismiss affordance
+  document.getElementById('p-close').style.display=d.isOverview?'none':'';
+  document.getElementById('info-panel').scrollTop=0;
 }
-window.closePanel=()=>{document.getElementById('info-panel').style.display='none';};
+function showOverview(){ openPanel({data:{...OVERVIEW[mode],isOverview:true}}); }
+window.closePanel=showOverview;
 
 // ─── Camera flight ───────────────────────────────────────────────────────────
 let flyStart=null,flyFrom,flyTo_,flyFromT,flyToT;
@@ -818,7 +894,8 @@ window.setMode=function(m){
   ['kuiper','oort','exo'].forEach(k=>
     document.getElementById('btn-'+k).classList.toggle('active',m===k));
   flyToVec(cfg.cam,new THREE.Vector3(0,0,0));
-  closePanel();
+  highlightKey=null;
+  showOverview();   // each view opens by explaining itself
   buildList();
 };
 
@@ -832,6 +909,9 @@ const REGION_VIEW={
   outer_oort: {mode:'oort',   cam:new THREE.Vector3(0,124,366)},
 };
 const HELIOPAUSE_VIEW={mode:'kuiper', cam:new THREE.Vector3(0,68,142)};
+// Frames the comet's whole 371 AU orbit rather than chasing the nucleus, so the
+// fall inward and the tail growing are both visible without touching the camera
+const COMET_VIEW={mode:'kuiper', cam:new THREE.Vector3(0,86,176)};
 
 // Dim the other regions briefly so the eye lands on the one just picked
 let highlightKey=null, highlightUntil=0;
@@ -893,6 +973,7 @@ document.getElementById('obj-list').addEventListener('click',e=>{
   const b=e.target.closest('.obj-btn'); if(!b)return;
   if(b.dataset.region)focusRegion(b.dataset.region);
   else if(b.dataset.heliopause)focusHeliopause();
+  else if(b.dataset.id==='comet')goToView(COMET_VIEW,null,COMET_INFO);
   else focusObject(b.dataset.id);
 });
 
